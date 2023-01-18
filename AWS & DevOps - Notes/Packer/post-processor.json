@@ -1,0 +1,32 @@
+{
+    "variables":{
+        "accesskey": "AKIC5SLLYB6WQM",
+        "secretkey":"HwqIgbSzer4kkZ6c39u22Lp8CcJxIUM6ux",
+        "region":"us-east-1",
+        "sourceimage":"ami-085925f297f89fce1"
+    },
+    "builders": [{
+        "type": "amazon-ebs",
+        "access_key": "{{user `accesskey`}}",
+        "secret_key": "{{user `secretkey`}}",
+        "region": "{{user `region`}}",
+        "source_ami": "{{user `sourceimage`}}",
+        "instance_type": "t2.micro",
+        "ssh_username": "ubuntu",
+        "ami_name": "apache11-{{isotime \"2006-01-02\"}}"
+    }],
+
+    "provisioners":[{
+        "type": "shell",
+        "inline": [
+          "sudo apt-get install apache2 -y"
+        ]
+      }],
+"post-processors": [
+      {
+        "type": "shell-local",
+        "inline": [
+          "/usr/local/bin/aws s3 cp consul-0.5.2.tar.gz s3://<s3 path>"
+      }
+    ]
+}

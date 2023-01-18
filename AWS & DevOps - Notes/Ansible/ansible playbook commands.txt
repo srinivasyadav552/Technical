@@ -1,0 +1,77 @@
+ 8  vi /etc/ansible/hosts
+    9  vi installgit.yaml
+   10  ansible-playbook installgit
+   11  ansible-playbook installgit.yaml
+   12  git --version
+   13  yum remove git -y
+   14  sudo yum remove git -y
+   15  su - ansible
+   16  exit
+   17  ssh-copy-id 172.31.0.32
+   18  vi /etc/ansible/hosts
+   19  vi installgit.yaml
+   20  ansible-playbook installgit.yaml
+   21  yum install tomcat
+   22  ssh-keygen
+   23  ssh-copy-id localhost
+   24  ssh localhost
+   25  ssh-copy-id 172.31.45.81
+   26  vi /etc/ansible/hosts
+   27  vi installgit.yaml
+   28  ansible-playbook installgit.yaml
+   29  git --version
+   30  vi installgit.yaml
+   31  ansible-playbook installgit.yaml
+   32  git --version
+   33  vi installgit.yaml
+   34  ansible-playbook installgit.yaml
+   35  vi installgit.yaml
+   36  ansible-playbook installgit.yaml
+   37  git --version
+   38  vi installgit.yaml
+   39  ansible-playbook installgit.yaml
+   40  git --version
+   41  sudo yum remove git -y
+   42  git --version
+   43  ansible-playbook installgit.yaml
+   44  git --version
+   45  clear
+   46  ansible-galaxy install geerlingguy.java
+   47  ansible-galaxy list
+   48  vi galaxy.yaml
+   49  ansible-playbook galaxy.yaml
+   50  java -version
+   51  sudo yum remove httpd -y
+   52  clear
+   53  ansible-galaxy init myrole
+   54  cd myrole
+   55  sudo yum install tree -y
+   56  tree
+   57  vi vars/main.yaml
+   58  vi vars/main.yml
+   59  vi tasks/main.yml
+   60  vi handlers/main.yml
+   61  cd ..
+   62  ls
+   63  cp galaxy.yaml myrole.yaml
+   64  vi myrole.yaml
+   65  ansible-galaxy myrole.yaml
+   66  ansible-playbook myrole.yaml
+   67  sudo service httpd status
+   68  sudo chkconfig httpd on
+   69  sudo service httpd status
+   70  cd myrole
+   71  git init
+   72  ls -a
+   73  git add .
+   74  git commit -m "ansible role"
+   75  git config --global user.email "srinivasyadav552@gmail.com"
+   76  git config --global user.name "srinivas"
+   77  git commit -m "ansible role"
+   78  git push
+   79  git remote add origin https://github.com/srinivasyadav552/myrole.git
+   80  git push -u origin master
+   81  git config --global user.name "srinivasyadav552"
+   82  git push -u origin master
+   83  vi setup.yaml
+   84  ansible-playbook setup.yaml

@@ -1,0 +1,22 @@
+Create Deployments:
+sudo kubectl create -f Deploy.yaml
+sudo kubectl get deployments
+sudo kubectl get rs
+sudo kubectl describe deployment <deployment-name>
+
+Update Deployments:
+sudo kubectl apply –f deploy.yaml
+
+Rollout Deployments:
+kubectl set image deployment/tomcat-deployment tomcat=tomcat:9.0.1  -- To Upgrade the Deployment
+kubectl rollout status deployment tomcat-deployment 
+kubectl rollout history deployment tomcat-deployment 
+kubectl rollout undo deployment tomcat-deployment  --to-revision=1
+
+Scaling Deployments:
+
+kubectl scale deployment tomcat-deployment --replicas=4
+kubectl autoscale deployment tomcat-deployment –min=5 –max=9 –cpu-percent=80
+sudo kubectl get hpa (Horizontal auto scaler)
+sudo kubectl describe hpa tomcat-deployment
+sudo kubectl delete hpa tomcat-deployment

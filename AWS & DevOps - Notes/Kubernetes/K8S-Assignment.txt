@@ -1,0 +1,15 @@
+Assignment #1
+
+Create your own Dockerfile
+Create Docker Image from Dockerfile and use that image in Kubernetes Manifest files to create Deployment and Pods
+
+Add below line in Manifest file below your image
+imagePullPolicy: Never
+
+Assignment #2
+
+Deploying WordPress and MySQL with Persistent Volumes
+https://kubernetes.io/docs/tutorials/stateful-application/mysql-wordpress-persistent-volume/
+
+Persistent Volume Concept
+

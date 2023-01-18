@@ -1,0 +1,44 @@
+1. BootStrap or Bash Script
+
+User Data
+#!/bin/sh
+yum install httpd -y
+service httpd start
+chkconfig httpd on 
+echo "Welcoem to Bash Scripting" >> /var/www/html/index.html
+
+2. Our Own AMIs
+
+Create 10 Servers
+
+Created one EC2 Instace
+with Apache httpd
+index.html
+git 
+tree
+
+Create AMI
+
+
+
+Created Snapshot from Volume
+From Snapshot -- Creating the Volume when
+1. you want to modify the Volume
+2. You want to move volume from one AZ to another AZ
+3. You want to encrypt the volume
+4. You wnat to move the volume from one Region to another Region
+
+
+Instance Meta Data
+
+65,536 Ports
+
+
+Object Based Storage (S3)
+Block Based Storage (EBS)
+Elastic File Storage (EFS) -- File Based Or Block Based and you can map this to Multiple EC2 Instances
+
+sudo yum install amazon-efs-utils -y
+
+sudo mount -t efs -o tls fs-ad6e7219:/ /var/www/html
+

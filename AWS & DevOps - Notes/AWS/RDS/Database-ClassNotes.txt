@@ -1,0 +1,32 @@
+Relational Databases
+
+E F Codd
+12 Rules
+Automated Backups
+Backup window
+Assume that backup window is at 4 AM everyday
+
+12Oct at 4 AM -- Full Back up
+From 4 AM on 12th Oct to 4 AM on 13th Oct all the transactions are going to be stored in Transaction Logs
+transaction logs are set of SQL Statements
+
+13 Oct 4 AM Full Daily Backup
+Previuosly generated Transaction logs are deleted
+Transaction Logs will be generated from 4 AM Onwards
+
+13Oct at 10 AM your Database is crashed
+You will create New Database
+Restore from 4 AM Full daily backup
+restore from transaction logs till 10 AM
+
+Backup & Restore Strategy
+Availability  -- Multi-AZ
+Performance
+
+Non Relational Databases (NoSQL Databases)
+
+
+Data Warehousing Databases
+Redshift
+
+Elasticache (In-Memory Cache)

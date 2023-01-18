@@ -1,0 +1,15 @@
+---
+  - hosts: localhost
+    become: yes
+    tasks:
+    - name: install apache on Redhat server
+      yum:
+       name: httpd
+       state: present
+      tags:
+      - install
+    - name: print free memory
+      debug:
+       msg: "free memory is {{ansible_memory_mb.real.free}}"
+      tags:
+      - debug

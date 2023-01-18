@@ -1,0 +1,130 @@
+Docker is to create a containers from one image at a time
+
+1. docker images -- To List down the docker images
+
+2. docker image inspect <ImageID> -- Gives complete details of the Image
+   docker container inspect <ContainerID> -- Gives complete details of the Container
+
+3. docker ps -- Lists the active docker containers
+
+4. docker ps -a -- to see all the containers (active and inactive)
+
+5. docker stop <ContainerID> -- To Stop the running Container
+   docker rm <ContainerID> -- To remove the container
+   docker rm -f <ContainerID> -- To remove the container forcifully
+
+6. docker build -t <ImageName>:<version> .   -- To Build Docker image with Default Dockerfile
+
+7. docker build -t <ImageName> -f Test/mydockerfile .  -- To Build Docker image with Custom Dockerfile
+
+8. docker run -d -p 8080:8080 <ImageID:Version> -- Create the Container (Pull+Create)
+
+9. docker container ls --> List of the Containers
+
+10. docker container logs <ContainerID>
+
+11. docker run -it <ImageName> /bin/bash -- Creates the Container from the Image and logs you into the Container
+
+12. docker exec -it <containerID> /bin/bash -- Login to the Container at any point of time
+
+13. docker pull myregistry.local:5000/testing/test-image -- To pull the Image from Local Registry
+
+14. docker push <imageName> -- skatta3/mywebapp -- To Push the Image to Docker Hub
+
+•	docker login docker.io
+•	docker image tag <imagename> <DockerHub-Username>/<imagename>:latest
+•	docker image push <DockerHub-Username>/<tagname>
+•	docker pull skatta3/imagename
+
+
+16. docker push localhost.localdomain:5000/ubuntu  -- To Push into Local Registry
+
+18. docker rm -f $(docker ps -a -q) –-- remove all containers at a time
+
+19. docker rmi <ImageID> --> To remove the Image
+
+20. docker rmi $(docker images -a -q) --> To remove all the images
+
+Docker Compose
+Docker-Compose is a service with which you can create multiple containers from multiple images with single command at a time
+
+21. sudo apt install docker-compose -- Install docker compose 
+
+22. docker-compose --version
+
+22. docker-compose.yml (yaml)
+version: "3"
+services:
+    web:
+      image: nginx
+    database:
+      image: redis
+
+23. docker-compose up -- To Start all the services from docker-compose.yml file
+
+24. docker-compose up –d –-scale database=4  -- To Scale up or down teh services started withing Compose
+
+25 docker-compose down -- It deletes all the containers that are started with docker compose
+
+26. docker stats
+
+Docker Swarm (is a Cluster)
+Docker Swarm is a Cluster Management to distribute the containers across nodes for High availability
+
+Create 1 Ubuntu EC2 Instance for Swarm manager and 2 or more Ubuntu EC2 Instances for Worker Nodes
+Install Docker on all the Instances
+
+•	curl -sSL https://get.docker.com/ | sh
+•	sudo usermod -aG docker ubuntu
+•	Logout and login back
+•	Execute docker info or docker --version
+
+Execute below command on Swarm Manager
+docker swarm init 
+
+it returns the command to be executed in a node server to join that node into Swarm manager(Leader)
+
+Join as a worker node
+To retrieve the join command including the join token for worker nodes, run the following command on a manager node:
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-2hsi9pubv4ttbmmulhnvdg3arlio1iiknxrggvpiv05q8tkp16-67x5yz7fy621zaw4kvcjno7we 172.31.92.73:2377 (You have to copy this command from Swarm manager after you executed docker swarm init)
+
+Add 2377 port to Security Group before you add worker nodes to Swarm Manager
+
+docker node ls  -- on Manager node to see the status of Manager and Worker
+
+
+Execute the following command to deploy jenkins
+
+docker service create --name jenkins --replicas 2 --update-delay 10s --publish published=8081,target=8080 jenkins:1.609.1
+
+To see the status of containers craeted execute below command
+docker service ps jenkins
+
+Now navigate to ipaddress of any node and 
+http://<nodip>:8081
+
+Scale up/down the number of containers
+
+docker service scale jenkins=4
+
+Now lets try to update to the newer version of jenkins
+docker service update --image jenkins:latest jenkins
+
+To Stop the Service and Remove all the containers execute below command
+
+docker service rm jenkins
+
+docker container run --name r-memcpu-jenkins -P -d --cpus="1" --memory 512m jenkins
+docker container run --name jenkins -P -d jenkins
+
+
+
+Secure Copy - To copy files from your local system to Remote Linux System
+
+scp -i "AnjaliEC2Keys.pem" java-tomcat-maven-example.war ubuntu@ec2-3-92-64-156.compute-1.amazonaws.com:/home/ubuntu
+
+
+

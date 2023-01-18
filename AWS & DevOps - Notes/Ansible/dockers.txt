@@ -1,0 +1,1 @@
+scp -i "AnjaliEC2Keys.pem" java-tomcat-maven-example.war ubuntu@ec2-3-92-64-156.compute-1.amazonaws.com:/home/ubuntu

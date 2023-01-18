@@ -1,0 +1,22 @@
+Deploying your first application to Kubernetes
+
+# Create a deployment called “web1” with the nginx web server image
+kubectl create deployment --image nginxdemos/hello web1
+
+#scale up the deployment
+kubectl scale deployment --replicas 5 web1
+
+#Expose the deployment to the network
+kubectl expose deployment web1 --port=80 --type=LoadBalancer
+
+#Open the URL of the web server in our web browser
+minikube service web1
+
+kubectl get deployments
+kubectl get pods
+kubectl get pods -w
+kubectl get service
+kubectl describe deployment <deployment-name>
+kubectl describe pod  <pod-name>
+kubectl describe service  <service-name>
+kubectl delete pod <pod-name>

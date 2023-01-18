@@ -1,0 +1,37 @@
+Git
+Maven
+Jenkins
+Ansible
+Docker
+	rkt
+	podman
+	containerD
+	RunC
+
+
+Kubernetes
+Container Orchestration Tool
+
+Trasactions 10
+Payments 8
+Reports 12
+
+To maintain the desired state
+Whenever actual state (Containers running at this moment)  less than desired state
+Kubernetes will start new containers to match the desired state
+
+Cluster Management Service
+
+Minikube is all in one platform
+
+Docker -- Container
+Kubernetes -- Pod
+kubectl --> api manager --> scheduler
+
+Declarative Model  -- What to do
+Procedural Model  -- What and How to do
+
+Pipeline  -- Continuous Integration
+
+Job Type of Pipeline using Groovy script  -- Pipeline as Code
+

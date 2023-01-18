@@ -1,0 +1,115 @@
+Configure the Nagios Server to Send Email Notifications
+
+This procedure requires administrative privileges.
+Use the instructions in this procedure to create Email alerts for sending notifications to users when needed.
+
+Step #1
+Log on to the Server as root.
+Stop the Nagios service.
+
+# service nagios stop
+# systemctl stop nagios.service
+
+Step #2
+Add the user's contact name, alias, and Email to the /usr/local/nagios/etc/objects/contacts.cfg file using the following format:
+define contact {
+        contact_name                            Contact1
+        alias                                   ContactNameAlias
+        email                                   email-address
+        service_notification_period             24x7
+        service_notification_options            w,u,c,r,f,s
+        service_notification_commands           notify-service-by-email
+        host_notification_period                24x7
+        host_notification_options               d,u,r,f,s
+        host_notification_commands              notify-host-by-email
+}
+define contact {
+        contact_name                            Contact2
+        alias                                   ContactNameAlias2
+        email                                   email-address
+        service_notification_period             24x7
+        service_notification_options            w,u,c,r,f,s
+        service_notification_commands           notify-service-by-email
+        host_notification_period                24x7
+        host_notification_options               d,u,r,f,s
+        host_notification_commands              notify-host-by-email
+}
+The service_notification_options directive is used to define the service states for which notifications can be sent out to this contact. Valid options are a combination of one or more of the following:
+w: Notify on WARNING service states
+u: Notify on UNKNOWN service states
+c: Notify on CRITICAL service states
+r: Notify on service RECOVERY (OK states)
+f: Notify when the service starts and stops FLAPPING
+n (none): Do not notify the contact on any type of service notifications
+The host_notification_options directive is used to define the host states for which notifications can be sent out to this contact. Valid options are a combination of one or more of the following:
+d: Notify on DOWN host states 
+u: Notify on UNREACHABLE host states 
+r: Notify on host RECOVERY (UP states) 
+f: Notify when the host starts and stops FLAPPING 
+s: Send notifications when host or service scheduled downtime starts and ends 
+n (none): Do not notify the contact on any type of host notifications.
+
+By default, a contact and a contact group are defined for administrators in the contacts.cfg file and all the services and hosts will notify the administrators. Add suitable Email ID for the administrator in the contacts.cfg file.
+
+Add the details (as shown in the following example) to add a group to which the mail needs to be sent:
+define contactgroup{
+        contactgroup_name                   Group1
+        alias                               GroupAlias
+        members                             Contact1,Contact2
+}
+
+Step #3
+Specify the contact name and contact group name for the services for which the notification needs to be sent in the /usr/local/nagios/etc/objects/templates.cfg file.
+
+define host{
+   name                         gluster-generic-host
+   use                          linux-server
+   notifications_enabled        1
+   notification_period          24x7
+   notification_interval        120
+   notification_options         d,u,r,f,s
+   register                     0
+   contact_groups        	Group1
+   contacts                     Contact1,Contact2
+   } 
+   
+ define service {
+   name                         gluster-service
+   use                          generic-service
+   notifications_enabled       1
+   notification_period          24x7
+   notification_options         w,u,c,r,f,s
+   notification_interval        120
+   register                     0
+   _gluster_entity              Service
+   contact_groups      		Group1
+   contacts                 Contact1,Contact2 
+}
+Notifications for individual services can be configured by editing the corresponding node configuration file. For example, to configure notification for the brick service, edit the corresponding node configuration file as shown below:
+define service {
+	 use                            brick-service                 
+	 _VOL_NAME                      VolumeName                          
+	 __GENERATED_BY_AUTOCONFIG      1                             
+	 notes                          Volume : VolumeName                    
+	 host_name                      RedHatStorageNodeName
+	 _BRICK_DIR                     brickpath               
+	 service_description            Brick Utilization - brickpath
+	 contact_groups        		Group1 
+   	contacts               	Contact1,Contact2
+}
+
+Step #4
+Edit the /usr/local/nagios/etc/objects/commands.cfg file to add $NOTIFICATIONCOMMENT$\n after the $SERVICEOUTPUT$\n option in notify-service-by-email and in the notify-host-by-email command definition.
+# 'notify-service-by-email' command definition
+define command{
+        command_name    notify-service-by-email
+        command_line    /usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$\n $NOTIFICATIONCOMMENT$\n" | /bin/mail -s "** $NOTIFICATIONTYPE$ Service Alert: $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" $CONTACTEMAIL$
+        }
+This section can also be modified to change the service which sends mail. To do so, change /bin/mail -s to the preferred mail service, for example /bin/sendmail.
+Restart the Nagios service.
+# service nagios restart
+# systemctl start nagios.service
+
+The Nagios server sends notifications during status changes to the mail addresses specified in the file. It is important to note that:
+By default, the system ensures three occurrences of the event before sending mail notifications.
+By default, Nagios mail notifications are sent using the /bin/mail command. To change this, modify the definition for the notify-host-by-email and notify-service-by-email commands in the /usr/local/nagios/etc/objects/commands.cfg file and configure the mail server accordingly.

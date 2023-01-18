@@ -1,0 +1,13 @@
+Additional Volumes
+
+lsblk – list the block based volumes
+Verify attached volumes
+file –s /dev/nvme1
+file –s  /dev/nvme1n1
+If it returns data then there is no file system in this volume
+To create a file system in Volume
+mkfs –t xfs /dev/nvme1n1
+Create a directory 
+mkdir multiattach
+mount /dev/nvme1n1 multiattach
+mount – this command returns what type of file system you have

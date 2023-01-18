@@ -1,0 +1,24 @@
+<?php
+$username = "admin";
+$password = "admin123";
+$hostname = "database-1.cilv6sf36yhg.us-east-1.rds.amazonaws.com";
+
+// Create connection
+$conn = new mysqli($hostname, $username, $password);
+
+// Check connection
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+echo "Connected successfully";
+?>
+
+
+
+sudo setsebool -P httpd_can_network_connect_db=1
+
+#!/bin/bash
+yum install httpd php php-mysqlnd -y 
+chkconfig httpd on
+service httpd start
+echo "<?php phpinfo();?>" > /var/www/html/index.php

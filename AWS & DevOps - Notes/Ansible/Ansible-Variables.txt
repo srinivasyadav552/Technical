@@ -1,0 +1,46 @@
+[AppServers]
+hostname1  -- tree
+hostname2  -- tree
+
+[DBServers]
+hostname3  -- nano
+hostname4  -- httpd
+
+
+
+Group variables and Host Variables
+
+Step #1
+
+Craete the Groups in Inventory file
+
+Step #2
+Craete group_vars and host_vars folders
+
+group_vars
+	create the file with the name of the group 
+	AppServers
+		Give the Package name to be installed
+		package_name: tree
+
+host_vars
+	create the file with the name of the host
+	hostname3  
+		Give the Package name to be installed
+		package_name: nano
+
+	hostname4  
+		Give the Package name to be installed
+		package_name: httpd
+
+Step #3
+Create a Playbook
+
+---
+- hosts: all
+  become: yes
+  tasks:
+   - name: install web server
+    yum:
+     name:  "{{package_name}}"
+     state: present

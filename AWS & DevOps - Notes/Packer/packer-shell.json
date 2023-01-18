@@ -1,0 +1,30 @@
+{
+    "variables":{
+        "secret" :"",
+        "access" : "",
+        "region" : "us-east-1",
+        "ami_name": "apache-from-packer"
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+           "access_key": "{{user `access`}}",
+           "secret_key": "{{user `secret`}}", 
+           "region": "{{user `region`}}",
+            "source_ami": "ami-096fda3c22c1c990a",
+            "instance_type": "t2.micro",
+            "ssh_username": "ec2-user",
+            "ami_name": "{{user `ami_name`}}",
+ 	   "tags": {
+     	      "Name": "PACKER-DEMO",
+     	      "Env": "DEMO"
+      		}
+          }
+    ],
+    "provisioners":[
+        {
+            "type": "shell",
+            "script": "installapache.sh"
+          }
+    ]
+}

@@ -1,0 +1,34 @@
+https://github.com/daticahealth/java-tomcat-maven-example.git
+
+cd /home/ansible;ansible-playbook integration.yaml
+
+tom cat installation :-
+
+sudo yum install java-1.8* wget -y
+cd /opt
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.53/bin/apache-tomcat-9.0.53.tar.gz 
+tar -xvzf apache-tomcat-9.0.53.tar.gz
+chmod +x /opt/apache-tomcat-9.0.53/bin/startup.sh 
+chmod +x /opt/apache-tomcat-9.0.53/bin/shutdown.sh
+/opt/apache-tomcat-9.0.53/bin/startup.sh
+Access  http://<publicIP>:8080 from Browser
+•	Shutdown the tomcat
+/opt/apache-tomcat-9.0.53/bin/shutdown.sh
+
+
+#Jenkins Integration
+
+##In tomcat server Create the User, we use this user to copy the package from Jenkins Server to Tomcat Server
+adduser tomcatadmin
+passwd tomcatadmin
+echo "tomcatadmin  ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+sed -ie 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+service sshd restart
+chmod -R 770 /opt/apache-tomcat-9.0.53
+chgrp -R tomcatadmin /opt/apache-tomcat-9.0.53
+
+
+
+//opt//apache-tomcat-9.0.53//webapps
+/opt/apache-tomcat-9.0.53/bin/startup.sh
+

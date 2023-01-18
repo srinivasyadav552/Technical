@@ -1,0 +1,68 @@
+Nagios Core Installation 
+
+####Create EC2 Instance with RHEL 8 and Login from your local system using Git Bash or Terminal
+
+sudo dnf install -y gcc glibc glibc-common perl httpd php wget gd gd-devel
+sudo su
+
+####Downloading the Source
+
+cd /tmp;wget -O nagioscore.tar.gz https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.5.tar.gz;tar xzf nagioscore.tar.gz
+
+####Compile the source code
+
+cd /tmp/nagioscore-nagios-4.4.5/;./configure;make all
+
+####Create User and Group
+
+make install-groups-users;usermod -a -G nagios apache
+
+####Install Binaries Service / Daemon
+
+make install;make install-daemoninit;systemctl enable httpd.service
+
+####Install Command Mode, This installs and configures the external command file. This ####installs the *SAMPLE* configuration files. These are required as Nagios needs some ####configuration files to allow it to start.Installs the Apache web server configuration #####files. Also configure Apache settings if required.
+
+make install-commandmode;make install-config; make install-webconf
+
+####Create nagiosadmin User Account, You'll need to create an Apache user account to be able #####to log into Nagios.The following command will create a user account called nagiosadmin ####and you will be prompted #to provide a password for the account.
+
+htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+
+####Install Plugins
+
+cd /opt;wget http://nagios-plugins.org/download/nagios-plugins-2.2.1.tar.gz;tar xzf nagios-plugins-2.2.1.tar.gz
+cd nagios-plugins-2.2.1;./configure --with-nagios-user=nagios --with-nagios-group=nagios;make;make install
+
+## Pre-Flight Check Command
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg  
+
+####Start Apache Webserver, Service/Daemon
+
+systemctl start httpd.service;systemctl start nagios.service
+
+####Test Nagios
+http://<public-ip>/nagios
+Username – nagiosadmin
+Password - 
+
+
+# To Add the Node Server
+1. cd /usr/local/nagios/etc/objects
+cp localhost.cfg node1.cfg
+
+2. Open node1.cfg in vi editor and replace local host with IP address of the node server
+you can use command to replace all entries at once
+:1,$s/source/destination/g
+
+3. open nagios.cfg under /usr/local/nagios/etc
+Add entry similar to te localhost.cfg for node1.cfg
+
+4. Stop Nagios service
+service nagios stop
+
+5. Run pre-flight check command and fix any errors reported
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg 
+
+6. start the nagios service
+service nagios start

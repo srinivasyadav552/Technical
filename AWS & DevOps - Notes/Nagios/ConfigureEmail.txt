@@ -1,0 +1,92 @@
+## Nagios Email Configuration in RedHat
+
+Reference: https://virtuallylg.wordpress.com/2020/02/10/configure-nagios-4-4-5-email-notification-using-gmail/
+
+yum install postfix cyrus-sasl-plain mailx -y
+
+Configure Postfix to Use Gmail Relay
+
+Enable STARTTLS encryption by changing the line smtp_tls_security_level = may to smtp_tls_security_level = encrypt.
+
+sed -i 's/smtp_tls_security_level = may/smtp_tls_security_level = encrypt/' /etc/postfix/main.cf
+
+If the smtp_tls_security_level option is not set, just insert it;
+
+echo "smtp_tls_security_level = encrypt" >> /etc/postfix/main.cf
+
+Define the path to CA certificates. The public root certificates are usually found under /etc/pki/tls/certs/ca-bundle.crt on RHEL derivatives and /etc/ssl/certs/ca-certificates.crt on Debian/Ubuntu systems.
+
+echo "smtp_tls_CAfile = /etc/pki/tls/certs/ca-bundle.crt" >> /etc/postfix/main.cf 
+
+Next, insert the following lines to the Postfix configuration file to define the Gmail relay host and SASL options.
+
+cat >> /etc/postfix/main.cf << EOF
+relayhost = [smtp.gmail.com]:587
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = noanonymous
+EOF
+
+Configure SASL credentials for your Gmail account.
+
+vim /etc/postfix/sasl_passwd
+
+Enter the following content, replacing the userid and password accordingly.
+
+[smtp.gmail.com]:587 userid@gmail.com:password
+
+Generate Postfix lookup table from the /etc/postfix/sasl_passwd file.
+
+postmap /etc/postfix/sasl_passwd
+
+Change ownership and permission to of the /etc/postfix/sasl_passwd to root and read-write only respectively.
+
+chown root:root /etc/postfix/sasl_passwd*
+chmod 600 /etc/postfix/sasl_passwd*
+
+systemctl enable postfix --now
+
+Test the relay;
+
+First, allow less secure apps access to your Gmail account.
+https://myaccount.google.com/u/1/lesssecureapps?pli=1&rapt=AEjHL4NpD9RihznIDsAts3l8WwGtNI6btswbwL733GxVS8gZsNnwBfOWtXr7UDhca0Nt052RCIKMaHFfaDxe9bqH32_exSrmKg
+
+After that, try to send a test mail.
+
+echo "Test Postfix Gmail Relay" | mail -s "Postfix Gmail Relay" userid@gmail.com
+
+tail -f /var/log/maillog
+
+
+echo "Test Postfix Gmail Relay" | mail -s "Postfix Gmail Relay" srinivasakatta@gmail.com
+
+
+
+## Nagios Email Configuration in Ubuntu
+
+Reference:  https://restorebin.com/configure-postfix-smtp-relay/
+
+If you receive Netwrok Unreachable Error
+Edit the Postfix configuration file:
+
+vi /etc/postfix/main.cf
+And change inet_protocols = all to inet_protocols = ipv4 and restart or reload Postfix:
+
+/etc/init.d/postfix reload
+and flush the Postfix queue:
+
+postfix -f
+
+## Logs
+Mar 28 03:41:04 ip-172-31-50-121 postfix/qmgr[6245]: 73DB53EE20: from=<ubuntu@ip-172-31-50-121.ec2.internal>, size=469, nrcpt=1 (queue active)
+Mar 28 03:41:05 ip-172-31-50-121 postfix/smtp[6247]: 73DB53EE20: to=<srinivasakatta@gmail.com>, relay=smtp.gmail.com[74.125.192.109]:587, delay=313, delays=312/0.07/0.63/0, dsn=4.7.14, status=deferred (SASL authentication failed; server smtp.gmail.com[74.125.192.109] said: 534-5.7.14 <https://accounts.google.com/signin/continue?sarp=1&scc=1&plt=AKgnsbv?534-5.7.14 okNfUd-TeiOGHn5g866HVR3tDUsftrvBbZODspypKjATPQuZuaTtpuTva7hIy4R-hhlVa?534-5.7.14 -Ss-F3qgEdJ_w4gCLUrCxtuEvlzh2krblk3V-Ab9vqRRJ9vRbXSmTjytJCb6vMYo>?534-5.7.14 Please log in via your web browser and then try again.?534-5.7.14  Learn more at?534 5.7.14  https://support.google.com/mail/answer/78754 z6sm8548021qtv.69 - gsmtp)
+Mar 28 03:41:15 ip-172-31-50-121 postfix/pickup[6244]: 599F03EC95: uid=1000 from=<ubuntu@ip-172-31-50-121.ec2.internal>
+Mar 28 03:41:15 ip-172-31-50-121 postfix/cleanup[6254]: 599F03EC95: message-id=<20210328034115.599F03EC95@ip-172-31-50-121.ec2.internal>
+Mar 28 03:41:15 ip-172-31-50-121 postfix/qmgr[6245]: 599F03EC95: from=<ubuntu@ip-172-31-50-121.ec2.internal>, size=469, nrcpt=1 (queue active)
+Mar 28 03:41:15 ip-172-31-50-121 postfix/smtp[6247]: 599F03EC95: to=<srinivasakatta@gmail.com>, relay=smtp.gmail.com[74.125.192.109]:587, delay=0.62, delays=0.06/0/0.56/0, dsn=4.7.14, status=deferred (SASL authentication failed; server smtp.gmail.com[74.125.192.109] said: 534-5.7.14 <https://accounts.google.com/signin/continue?sarp=1&scc=1&plt=AKgnsbu?534-5.7.14 8E9fcwpa7-h_qm9T7NcX4TrCLly-wx79kUbxNPsN32h_QsHyU--btdM6UuUJI8DGJZRhf?534-5.7.14 VPoK3tV_l4IOX2mJAQ-lYTMqIobj2F50EgCNsQza6l7z5P6gEH7TNleRPC9YHHrl>?534-5.7.14 Please log in via your web browser and then try again.?534-5.7.14  Learn more at?534 5.7.14  https://support.google.com/mail/answer/78754 y1sm10327998qki.9 - gsmtp)
+Mar 28 03:45:47 ip-172-31-50-121 postfix/pickup[6244]: A73763EC99: uid=1000 from=<ubuntu@ip-172-31-50-121.ec2.internal>
+Mar 28 03:45:47 ip-172-31-50-121 postfix/cleanup[6266]: A73763EC99: message-id=<20210328034547.A73763EC99@ip-172-31-50-121.ec2.internal>
+Mar 28 03:45:47 ip-172-31-50-121 postfix/qmgr[6245]: A73763EC99: from=<ubuntu@ip-172-31-50-121.ec2.internal>, size=469, nrcpt=1 (queue active)
+Mar 28 03:45:48 ip-172-31-50-121 postfix/smtp[6268]: A73763EC99: to=<srinivasakatta@gmail.com>, relay=smtp.gmail.com[173.194.66.109]:587, delay=0.67, delays=0.02/0.01/0.64/0, dsn=4.7.14, status=deferred (SASL authentication failed; server smtp.gmail.com[173.194.66.109] said: 534-5.7.14 <https://accounts.google.com/signin/continue?sarp=1&scc=1&plt=AKgnsbt?534-5.7.14 3BsZnVm4pBwT9LkAMIQGqbZSY53cbQisMxO9IISFXyhjV0o-qkR9ysIRGAcAp-qaa9iAI?534-5.7.14 c-Cwtxn3P8D29m2lQe3gMAhNXljWqiNhtGRW993w8-N6aS4KO1-cMj8Y0sOP1XUR>?534-5.7.14 Please log in via your web browser and then try again.?534-5.7.14  Learn more at?534 5.7.14  https://support.google.com/mail/answer/78754 j6sm7990591qtx.14 - gsmtp)
+
+
